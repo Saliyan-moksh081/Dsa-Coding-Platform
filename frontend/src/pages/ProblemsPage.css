@@ -1,0 +1,224 @@
+.problems-page {
+    padding: var(--spacing-xl) 0;
+}
+
+.problems-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-xl);
+    gap: var(--spacing-xl);
+}
+
+.header-content h1 {
+    font-size: 32px;
+    margin-bottom: var(--spacing-xs);
+}
+
+.header-content p {
+    color: var(--text-secondary);
+}
+
+.stats-cards {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md) var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 80px;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.stat-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+}
+
+.stat-easy .stat-value {
+    color: var(--easy-color);
+}
+
+.stat-medium .stat-value {
+    color: var(--medium-color);
+}
+
+.stat-hard .stat-value {
+    color: var(--hard-color);
+}
+
+.problems-filters {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-bottom: var(--spacing-lg);
+}
+
+.filter-btn {
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: var(--radius-md);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    font-weight: 500;
+    font-size: 13px;
+}
+
+.filter-btn:hover {
+    border-color: var(--border-hover);
+    color: var(--text-primary);
+}
+
+.filter-btn.active {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+    color: white;
+}
+
+.filter-easy.active {
+    background: var(--easy-color);
+    border-color: var(--easy-color);
+}
+
+.filter-medium.active {
+    background: var(--medium-color);
+    border-color: var(--medium-color);
+}
+
+.filter-hard.active {
+    background: var(--hard-color);
+    border-color: var(--hard-color);
+}
+
+.problems-table-container {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.problems-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.problems-table th {
+    text-align: left;
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.problems-table td {
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-top: 1px solid var(--border-color);
+}
+
+.problem-row {
+    transition: background var(--transition-fast);
+}
+
+.problem-row:hover {
+    background: var(--bg-secondary);
+}
+
+.status-cell {
+    width: 50px;
+    text-align: center;
+}
+
+.solved-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    background: var(--accent-success);
+    color: white;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.unsolved-icon {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
+}
+
+.title-cell {
+    font-weight: 500;
+}
+
+.problem-link {
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.problem-link:hover {
+    color: var(--accent-primary);
+}
+
+.problem-number {
+    color: var(--text-muted);
+    font-size: 13px;
+    min-width: 30px;
+}
+
+.points-cell {
+    text-align: right;
+}
+
+.points {
+    color: var(--accent-success);
+    font-weight: 600;
+}
+
+.points::after {
+    content: ' pts';
+    font-weight: 400;
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+.no-problems {
+    padding: var(--spacing-2xl);
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+.loading-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 50vh;
+}
+
+@media (max-width: 768px) {
+    .problems-header {
+        flex-direction: column;
+    }
+
+    .stats-cards {
+        width: 100%;
+        justify-content: space-between;
+    }
+}

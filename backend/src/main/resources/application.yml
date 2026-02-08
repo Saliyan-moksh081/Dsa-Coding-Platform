@@ -1,0 +1,52 @@
+spring:
+  application:
+    name: dsa-platform
+  
+  # Database Configuration
+  datasource:
+    url: jdbc:postgresql://localhost:5432/dsaplatform
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  
+  # Flyway Migration
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+# Server Configuration
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+# JWT Configuration
+jwt:
+  secret: ${JWT_SECRET:your-256-bit-secret-key-here-make-it-long-enough-for-security}
+  expiration: 86400000  # 24 hours in milliseconds
+
+# Admin Configuration
+admin:
+  email: ${ADMIN_EMAIL:admin@dsaplatform.com}
+
+# Code Execution Configuration
+judge:
+  timeout-seconds: 5
+  memory-limit-mb: 256
+  docker:
+    enabled: true
+    network: none
+
+# CORS Configuration
+cors:
+  allowed-origins: http://localhost:3000,http://localhost:5173
