@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { problemsApi, leaderboardApi } from '../services/api';
 import './ProblemsPage.css';
 
@@ -10,6 +9,7 @@ interface Problem {
     difficulty: string;
     points: number;
     solved: boolean;
+    topic: string;
 }
 
 interface Stats {
@@ -24,7 +24,10 @@ const ProblemsPage: React.FC = () => {
     const [problems, setProblems] = useState<Problem[]>([]);
     const [stats, setStats] = useState<Stats | null>(null);
     const [loading, setLoading] = useState(true);
-    const [filter, setFilter] = useState<string>('ALL');
+    const [difficultyFilter, setDifficultyFilter] = useState<string>('ALL');
+    const [topicFilter, setTopicFilter] = useState<string>('ALL');
+
+    const topics = ['ALL', ...Array.from(new Set(problems.map(p => p.topic || 'General')))];
 
 
     useEffect(() => {
@@ -46,9 +49,11 @@ const ProblemsPage: React.FC = () => {
         fetchData();
     }, []);
 
-    const filteredProblems = problems.filter(problem =>
-        filter === 'ALL' || problem.difficulty === filter
-    );
+    const filteredProblems = problems.filter(problem => {
+        const matchesDifficulty = difficultyFilter === 'ALL' || problem.difficulty === difficultyFilter;
+        const matchesTopic = topicFilter === 'ALL' || (problem.topic || 'General') === topicFilter;
+        return matchesDifficulty && matchesTopic;
+    });
 
     if (loading) {
         return (
@@ -90,30 +95,50 @@ const ProblemsPage: React.FC = () => {
                 </div>
 
                 <div className="problems-filters">
-                    <button
-                        className={`filter-btn ${filter === 'ALL' ? 'active' : ''}`}
-                        onClick={() => setFilter('ALL')}
-                    >
-                        All
-                    </button>
-                    <button
-                        className={`filter-btn filter-easy ${filter === 'EASY' ? 'active' : ''}`}
-                        onClick={() => setFilter('EASY')}
-                    >
-                        Easy
-                    </button>
-                    <button
-                        className={`filter-btn filter-medium ${filter === 'MEDIUM' ? 'active' : ''}`}
-                        onClick={() => setFilter('MEDIUM')}
-                    >
-                        Medium
-                    </button>
-                    <button
-                        className={`filter-btn filter-hard ${filter === 'HARD' ? 'active' : ''}`}
-                        onClick={() => setFilter('HARD')}
-                    >
-                        Hard
-                    </button>
+                    <div className="filter-group">
+                        <span className="filter-label">Difficulty:</span>
+                        <div className="filter-buttons">
+                            <button
+                                className={`filter-btn ${difficultyFilter === 'ALL' ? 'active' : ''}`}
+                                onClick={() => setDifficultyFilter('ALL')}
+                            >
+                                All
+                            </button>
+                            <button
+                                className={`filter-btn filter-easy ${difficultyFilter === 'EASY' ? 'active' : ''}`}
+                                onClick={() => setDifficultyFilter('EASY')}
+                            >
+                                Easy
+                            </button>
+                            <button
+                                className={`filter-btn filter-medium ${difficultyFilter === 'MEDIUM' ? 'active' : ''}`}
+                                onClick={() => setDifficultyFilter('MEDIUM')}
+                            >
+                                Medium
+                            </button>
+                            <button
+                                className={`filter-btn filter-hard ${difficultyFilter === 'HARD' ? 'active' : ''}`}
+                                onClick={() => setDifficultyFilter('HARD')}
+                            >
+                                Hard
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="filter-group topic-filter-group">
+                        <span className="filter-label">Topics:</span>
+                        <div className="topic-tabs">
+                            {topics.map(topic => (
+                                <button
+                                    key={topic}
+                                    className={`topic-tab ${topicFilter === topic ? 'active' : ''}`}
+                                    onClick={() => setTopicFilter(topic)}
+                                >
+                                    {topic}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                 </div>
 
                 <div className="problems-table-container">
@@ -137,10 +162,15 @@ const ProblemsPage: React.FC = () => {
                                         )}
                                     </td>
                                     <td className="title-cell">
-                                        <Link to={`/problems/${problem.slug}`} className="problem-link">
+                                        <a
+                                            href={`https://leetcode.com/problems/${problem.slug}/`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="problem-link"
+                                        >
                                             <span className="problem-number">{index + 1}.</span>
                                             {problem.title}
-                                        </Link>
+                                        </a>
                                     </td>
                                     <td>
                                         <span className={`badge badge-${problem.difficulty.toLowerCase()}`}>

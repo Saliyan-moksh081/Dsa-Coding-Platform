@@ -47,6 +47,9 @@ export const authApi = {
 
     resetPassword: (token: string, newPassword: string) =>
         api.post('/auth/reset-password', { token, newPassword }),
+
+    updateLeetCodeUsername: (leetcodeUsername: string) =>
+        api.post('/auth/leetcode-username', { leetcodeUsername }),
 };
 
 // Problems

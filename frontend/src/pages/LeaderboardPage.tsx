@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { leaderboardApi } from '../services/api';
+import { leaderboardApi, authApi } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import './LeaderboardPage.css';
 
 interface LeaderboardEntry {
@@ -14,19 +15,29 @@ interface LeaderboardEntry {
 const LeaderboardPage: React.FC = () => {
     const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
     const [loading, setLoading] = useState(true);
+    const [leetcodeUsername, setLeetcodeUsername] = useState('');
+    const [isLinking, setIsLinking] = useState(false);
+    const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+    const { user, checkAuth } = useAuth();
 
     useEffect(() => {
-        const fetchLeaderboard = async () => {
-            try {
-                const response = await leaderboardApi.get();
-                setEntries(response.data.entries);
-            } catch (error) {
-                console.error('Error fetching leaderboard:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
+        if (user?.leetcodeUsername) {
+            setLeetcodeUsername(user.leetcodeUsername);
+        }
+    }, [user]);
 
+    const fetchLeaderboard = async () => {
+        try {
+            const response = await leaderboardApi.get();
+            setEntries(response.data.entries);
+        } catch (error) {
+            console.error('Error fetching leaderboard:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
         fetchLeaderboard();
     }, []);
 
@@ -53,6 +64,50 @@ const LeaderboardPage: React.FC = () => {
                 <div className="leaderboard-header">
                     <h1>🏆 Leaderboard</h1>
                     <p>Top performers in the team</p>
+                </div>
+
+                <div className="leetcode-link-section">
+                    <div className="link-card">
+                        <h3>🔗 Link LeetCode Account</h3>
+                        <p>Enter your LeetCode username to sync your progress automatically.</p>
+                        <form onSubmit={async (e) => {
+                            e.preventDefault();
+                            setIsLinking(true);
+                            setMessage(null);
+                            try {
+                                await authApi.updateLeetCodeUsername(leetcodeUsername);
+                                setMessage({ type: 'success', text: 'LeetCode account linked successfully! Syncing stats...' });
+                                await checkAuth();
+                                // Refresh leaderboard after a short delay to allow backend sync to finish
+                                setTimeout(fetchLeaderboard, 2000);
+                            } catch (error: any) {
+                                setMessage({ type: 'error', text: error.response?.data?.message || 'Failed to link account' });
+                            } finally {
+                                setIsLinking(false);
+                            }
+                        }} className="link-form">
+                            <input
+                                type="text"
+                                placeholder="LeetCode Username"
+                                value={leetcodeUsername}
+                                onChange={(e) => setLeetcodeUsername(e.target.value)}
+                                required
+                            />
+                            <button type="submit" disabled={isLinking}>
+                                {isLinking ? 'Linking...' : 'Link Account'}
+                            </button>
+                        </form>
+                        {message && (
+                            <div className={`message ${message.type}`}>
+                                {message.text}
+                            </div>
+                        )}
+                        {user?.lastSyncAt && (
+                            <div className="last-sync">
+                                Last synced: {new Date(user.lastSyncAt).toLocaleString()}
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {entries.length > 0 && (
