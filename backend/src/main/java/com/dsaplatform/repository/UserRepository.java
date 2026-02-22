@@ -21,4 +21,6 @@ public interface UserRepository extends JpaRepository<User, UUID> {
 
     @Query("SELECT u FROM User u ORDER BY u.totalScore DESC, u.problemsSolved DESC LIMIT :limit")
     List<User> findTopByScore(int limit);
+
+    List<User> findByLeetcodeUsernameIsNotNull();
 }

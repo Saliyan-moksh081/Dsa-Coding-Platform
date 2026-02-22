@@ -60,6 +60,7 @@ public class ProblemDto {
         private String slug;
         private String difficulty;
         private Integer points;
+        private String topic;
         private LocalDateTime createdAt;
         private Boolean solved; // Whether current user has solved it
     }
@@ -80,6 +81,7 @@ public class ProblemDto {
         private Integer points;
         private List<TestCaseResponse> sampleTestCases;
         private Boolean solved;
+        private String topic;
         private LocalDateTime createdAt;
     }
 

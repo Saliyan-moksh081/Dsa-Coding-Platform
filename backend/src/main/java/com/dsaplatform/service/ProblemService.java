@@ -68,6 +68,7 @@ public class ProblemService {
                 .inputFormat(problem.getInputFormat())
                 .outputFormat(problem.getOutputFormat())
                 .points(problem.getPoints())
+                .topic(problem.getTopic())
                 .solved(solved)
                 .sampleTestCases(sampleTestCases.stream()
                         .map(tc -> ProblemDto.TestCaseResponse.builder()
@@ -150,6 +151,7 @@ public class ProblemService {
                 .slug(problem.getSlug())
                 .difficulty(problem.getDifficulty().name())
                 .points(problem.getPoints())
+                .topic(problem.getTopic())
                 .solved(solved)
                 .createdAt(problem.getCreatedAt())
                 .build();

@@ -43,6 +43,12 @@ public class User {
     @Builder.Default
     private Integer problemsSolved = 0;
 
+    @Column(name = "leetcode_username")
+    private String leetcodeUsername;
+
+    @Column(name = "last_sync_at")
+    private LocalDateTime lastSyncAt;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

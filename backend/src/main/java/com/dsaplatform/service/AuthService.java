@@ -13,6 +13,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.concurrent.CompletableFuture;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -21,6 +23,7 @@ public class AuthService {
         private final PasswordEncoder passwordEncoder;
         private final JwtTokenProvider jwtTokenProvider;
         private final AuthenticationManager authenticationManager;
+        private final LeetCodeService leetCodeService;
 
         @Value("${admin.email}")
         private String adminEmail;
@@ -84,6 +87,8 @@ public class AuthService {
                                 .role(user.getRole().name())
                                 .totalScore(user.getTotalScore())
                                 .problemsSolved(user.getProblemsSolved())
+                                .leetcodeUsername(user.getLeetcodeUsername())
+                                .lastSyncAt(user.getLastSyncAt())
                                 .build();
         }
 
@@ -132,5 +137,62 @@ public class AuthService {
                 userRepository.save(user);
 
                 passwordResetTokenRepository.delete(resetToken);
+        }
+
+        @Transactional
+        public void updateLeetCodeUsername(String email, String leetcodeUsername) {
+                User user = userRepository.findByEmail(email)
+                                .orElseThrow(() -> new RuntimeException("User not found"));
+
+                // Extract username from URL if full URL is provided
+                String username = extractLeetCodeUsername(leetcodeUsername);
+                user.setLeetcodeUsername(username);
+                userRepository.save(user);
+
+                // Trigger initial sync asynchronously (LeetCode API can be slow)
+                java.util.UUID userId = user.getId();
+                CompletableFuture.runAsync(() -> {
+                        User userToSync = userRepository.findById(userId).orElse(null);
+                        if (userToSync != null) {
+                                syncLeetCodeStats(userToSync);
+                        }
+                });
+        }
+
+        private String extractLeetCodeUsername(String input) {
+                if (input == null || input.isBlank()) {
+                        return input;
+                }
+                // If it's a URL, extract the username
+                if (input.contains("leetcode.com")) {
+                        // Pattern: https://leetcode.com/u/username/ or https://leetcode.com/profile/username/
+                        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("leetcode\\.com/(?:u|profile)/([^/]+)");
+                        java.util.regex.Matcher matcher = pattern.matcher(input);
+                        if (matcher.find()) {
+                                return matcher.group(1);
+                        }
+                }
+                // If it's already just a username, return as is
+                return input.trim();
+        }
+
+        @Transactional
+        public void syncLeetCodeStats(User user) {
+                if (user.getLeetcodeUsername() == null || user.getLeetcodeUsername().isBlank()) {
+                        return;
+                }
+
+                try {
+                        LeetCodeService.LeetCodeStats stats = leetCodeService
+                                        .fetchUserStats(user.getLeetcodeUsername());
+                        user.setProblemsSolved(stats.getTotalSolved());
+                        user.setTotalScore(stats.calculatePoints());
+                        user.setLastSyncAt(java.time.LocalDateTime.now());
+                        userRepository.save(user);
+                } catch (Exception e) {
+                        // Log and continue
+                        System.err.println("Failed to sync LeetCode stats for user " + user.getEmail() + ": "
+                                        + e.getMessage());
+                }
         }
 }

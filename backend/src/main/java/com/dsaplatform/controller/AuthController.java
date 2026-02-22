@@ -42,4 +42,12 @@ public class AuthController {
         authService.resetPassword(request.getToken(), request.getNewPassword());
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/leetcode-username")
+    public ResponseEntity<Void> updateLeetCodeUsername(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @Valid @RequestBody AuthDto.LeetCodeUpdateRequest request) {
+        authService.updateLeetCodeUsername(userDetails.getUsername(), request.getLeetcodeUsername());
+        return ResponseEntity.ok().build();
+    }
 }

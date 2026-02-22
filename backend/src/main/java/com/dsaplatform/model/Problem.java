@@ -48,6 +48,9 @@ public class Problem {
     @Column(nullable = false)
     private Integer points;
 
+    @Column
+    private String topic;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "created_by")
     private User createdBy;

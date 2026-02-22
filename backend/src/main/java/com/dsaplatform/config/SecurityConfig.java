@@ -44,11 +44,15 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
-                        .requestMatchers("/auth/**").permitAll()
+                        // Allow OPTIONS for CORS preflight
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        // Public auth endpoints
+                        .requestMatchers("/auth/register", "/auth/login", "/auth/forgot-password", "/auth/reset-password").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/problems/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/leaderboard/**").permitAll()
+                        // Authenticated auth endpoints
+                        .requestMatchers("/auth/me", "/auth/leetcode-username").authenticated()
                         // Admin endpoints
                         .requestMatchers(HttpMethod.POST, "/problems/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/problems/**").hasRole("ADMIN")

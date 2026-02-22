@@ -76,6 +76,15 @@ public class AuthDto {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
+    public static class LeetCodeUpdateRequest {
+        @NotBlank(message = "LeetCode username is required")
+        private String leetcodeUsername;
+    }
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class UserResponse {
         private String id;
         private String email;
@@ -83,5 +92,7 @@ public class AuthDto {
         private String role;
         private Integer totalScore;
         private Integer problemsSolved;
+        private String leetcodeUsername;
+        private java.time.LocalDateTime lastSyncAt;
     }
 }
